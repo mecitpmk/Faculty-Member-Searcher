@@ -148,7 +148,7 @@ class GraphicalInferface(Frame):
             elem = driver.find_element_by_xpath("//*")
             html_doc = elem.get_attribute("outerHTML")
             self.soup = BeautifulSoup(html_doc, 'html.parser')
-            self.all_user_dictionary=self.procces_soup(self.soup)
+            self.procces_soup(self.soup)
             self.all_departments.sort()
             self.departments_combobox.configure(values=self.all_departments)
             self.departments_combobox.current(0)
@@ -165,7 +165,6 @@ class GraphicalInferface(Frame):
         
         Returns {dict} - all_users {PROFESSORS_NAME : {DEPARTMENT_:DEPARTMENT , LINK : CORRESPONDING TEACHER LINK.}}
         """
-        all_users={}
         names=soup_obj.find_all(class_="academic-staff-name")
         departments=soup_obj.find_all(class_="academic-staff-department")
         links=soup_obj.find_all(class_="academic-staff-category-inside")
@@ -174,13 +173,9 @@ class GraphicalInferface(Frame):
             name=names[a].text
             department=departments[a].text
             link=members[a]
-            all_users.setdefault(name,{})
             if department not in self.all_departments:
                 self.all_departments.append(department)
-            all_users[name]["Department"]=department
-            all_users[name]["Link"]=(f'{self.university_links}{link}')
             Professors(name=name,department=department,link=f'{self.university_links}{link}')
-        return all_users
 
     def collect_informations(self):
         """
@@ -195,13 +190,13 @@ class GraphicalInferface(Frame):
             progress=30 # WHEN PROFILE LINKS COLLECTED IT WILL MOVE 30
             completed=20 # %20 COMPLETED WHEN LINKS COLLECTED
             comp_total=100-completed # %80 HAVE TO FILL.
-            compl_move=comp_total/(len(self.all_user_dictionary))
+            compl_move=comp_total/(len(Professors.all_prof))
             self.progress_bar.create_rectangle(0,0,progress,30,fill="green")
             self.progres_bar_comp.configure(text=(f'{str(completed)}%Completed!'))
             self.update()
             self.progres_info_lab.config(text="Fetching Profiles..")
             self.user_and_keywords={}
-            bar_move=(total-progress)/len(self.all_user_dictionary)
+            bar_move=(total-progress)/len(Professors.all_prof)
             for user in Professors.all_prof:
                 # user_link = user.link
                 req = requests.get(user.link,verify=False)
